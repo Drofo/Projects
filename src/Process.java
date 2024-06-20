@@ -19,7 +19,6 @@ public class Process {
 
     }
 
-    // передача оператора и числа
     private Double process(String op, String num, Double sum) {
         if (op.equals("+")) {
             double summa = sum + Double.parseDouble(num);
