@@ -1,40 +1,46 @@
 package jm.task.core.jdbc.util;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.service.ServiceRegistry;
-import jm.task.core.jdbc.model.User;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Util {
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static final String URL = "jdbc:mysql://localhost:3306/example_schema";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Gun452000";
 
-    private static SessionFactory buildSessionFactory() {
-        try {
-            Configuration configuration = new Configuration();
+    private static Connection connection;
 
-            configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-            configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/example_schema");
-            configuration.setProperty("hibernate.connection.username", "root");
-            configuration.setProperty("hibernate.connection.password", "Gun452000");
-            configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-            configuration.setProperty("hibernate.show_sql", "true");
-            configuration.setProperty("hibernate.hbm2ddl.auto", "update");
-
-            configuration.addAnnotatedClass(User.class);
-
-            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                    .applySettings(configuration.getProperties()).build();
-
-            return configuration.buildSessionFactory(serviceRegistry);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExceptionInInitializerError("Initial SessionFactory creation failed." + e);
-        }
+    private Util() {
+        throw new UnsupportedOperationException("Util class cannot be instantiated");
     }
 
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
+    public static Connection getConnection() {
+        if (connection == null) {
+            synchronized (Util.class) {
+                if (connection == null) {
+                    try {
+                        connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                        System.out.println("Connection established.");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Failed to establish database connection.", e);
+                    }
+                }
+            }
+        }
+        return connection;
+    }
+
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+                System.out.println("Connection closed.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
