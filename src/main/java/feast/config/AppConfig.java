@@ -15,8 +15,8 @@ public class AppConfig {
     }
 
     @Bean
-    public static Goat6 getGoat(Horse7 horse7) {
-        return new Goat6(horse7);
+    public static Goat6 getGoat(Horse7 horse) {
+        return new Goat6(horse);
     }
 
 }

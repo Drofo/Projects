@@ -1,5 +1,8 @@
 package feast.models;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Goat6 {
 
     private Horse7 horse7;
